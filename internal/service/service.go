@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"st-booker/internal/model"
 
@@ -14,11 +15,16 @@ type Storage interface {
 	DeleteBooking(ctx context.Context, id string) error
 }
 
+type SpaceXClient interface {
+	LaunchesForDate(launchpadID string, date time.Time) (int, error)
+}
+
 type Booking struct {
 	storage Storage
+	client  SpaceXClient
 	logger  *zap.Logger
 }
 
-func NewBooking(storage Storage, logger *zap.Logger) *Booking {
-	return &Booking{storage: storage, logger: logger}
+func NewBooking(storage Storage, client SpaceXClient, logger *zap.Logger) *Booking {
+	return &Booking{storage: storage, client: client, logger: logger}
 }

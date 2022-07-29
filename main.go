@@ -8,11 +8,14 @@ import (
 	"st-booker/internal/config"
 	"st-booker/internal/server"
 	"st-booker/internal/service"
+	"st-booker/internal/spacex"
 	"st-booker/internal/storage"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +42,9 @@ func main() {
 
 	st, err := storage.NewClient(db)
 
-	srv := service.NewBooking(st, lg)
+	sx := spacex.NewClient(cfg.SpaceX.ApiUrl)
+
+	srv := service.NewBooking(st, sx, lg)
 
 	r := gin.Default()
 	s := server.NewServer(r, srv, lg)
@@ -56,7 +61,7 @@ func migrateUp(db *sql.DB) error {
 		return err
 	}
 
-	m, err := migrate.NewWithDatabaseInstance("file://migrations", "postgres", driver)
+	m, err := migrate.NewWithDatabaseInstance("file:///app/migrations", "postgres", driver)
 	if err != nil {
 		return err
 	}

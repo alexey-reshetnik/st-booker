@@ -2,12 +2,24 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"st-booker/internal/model"
 )
 
-func (c *Booking) CreateBooking(ctx context.Context, booking model.Booking) (string, error) {
-	id, err := c.storage.CreateBooking(ctx, booking)
+var ErrNoAvailableLaunchTime = errors.New("can't launch the rocket at this launchpad at given date")
+
+func (b *Booking) CreateBooking(ctx context.Context, booking model.Booking) (string, error) {
+	launchesCount, err := b.client.LaunchesForDate(booking.LaunchpadID, booking.LaunchDate)
+	if err != nil {
+		return "", err
+	}
+
+	if launchesCount != 0 {
+		return "", ErrNoAvailableLaunchTime
+	}
+
+	id, err := b.storage.CreateBooking(ctx, booking)
 	if err != nil {
 		return "", err
 	}
@@ -15,8 +27,8 @@ func (c *Booking) CreateBooking(ctx context.Context, booking model.Booking) (str
 	return id, nil
 }
 
-func (c *Booking) GetBookings(ctx context.Context, limit, offset int) ([]model.Booking, error) {
-	bookings, err := c.storage.GetBookings(ctx, limit, offset)
+func (b *Booking) GetBookings(ctx context.Context, limit, offset int) ([]model.Booking, error) {
+	bookings, err := b.storage.GetBookings(ctx, limit, offset)
 	if err != nil {
 		return []model.Booking{}, err
 	}
@@ -24,6 +36,6 @@ func (c *Booking) GetBookings(ctx context.Context, limit, offset int) ([]model.B
 	return bookings, nil
 }
 
-func (c *Booking) DeleteBooking(ctx context.Context, id string) error {
-	return c.storage.DeleteBooking(ctx, id)
+func (b *Booking) DeleteBooking(ctx context.Context, id string) error {
+	return b.storage.DeleteBooking(ctx, id)
 }
