@@ -1,9 +1,10 @@
 db:
-  host: db
+  host: st_booker_postgres
   port: 5432
-  name: postgres
-  user: postgres
+  dbname: bookings
+  username: postgres
   password: postgres
+  sslmode: disable
 
 spacex:
   apiUrl: "https://api.spacexdata.com"

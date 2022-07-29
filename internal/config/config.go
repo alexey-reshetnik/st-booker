@@ -1,8 +1,6 @@
 package config
 
 import (
-	"os"
-
 	"github.com/spf13/viper"
 )
 
@@ -13,7 +11,7 @@ type (
 		DBName   string
 		Username string
 		Password string
-		SSLMode  bool
+		SSLMode  string
 	}
 
 	SpaceX struct {
@@ -32,7 +30,9 @@ type (
 )
 
 func ReadConfig() (Config, error) {
-	viper.SetConfigFile(os.Getenv("CONFIG_FILE"))
+	viper.AddConfigPath("/app")
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("config")
 
 	err := viper.ReadInConfig()
 	if err != nil {
