@@ -6,8 +6,12 @@ import (
 
 type Client struct {
 	*http.Client
+	apiURL string
 }
 
-func NewClient() *Client {
-	return &Client{}
+func NewClient(apiURL string) *Client {
+	return &Client{
+		Client: &http.Client{},
+		apiURL: apiURL,
+	}
 }
