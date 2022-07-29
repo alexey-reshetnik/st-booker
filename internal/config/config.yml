@@ -1,0 +1,12 @@
+db:
+  host: db
+  port: 5432
+  name: postgres
+  user: postgres
+  password: postgres
+
+spacex:
+  apiUrl: "https://api.spacexdata.com"
+
+httpServer:
+  port: 8080
