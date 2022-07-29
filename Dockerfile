@@ -2,21 +2,17 @@ FROM golang:1.18 AS build
 RUN go version
 
 RUN mkdir /src
-ADD . /src
+COPY . /src
 WORKDIR /src
 
-COPY go.mod /src
-COPY go.sum /src
-
 RUN go mod download
-RUN go build -o /tmp/st-booker .
-
+RUN export CGO_ENABLED=0; go build -o /tmp/st-booker .
 
 FROM alpine:edge AS runtime
 
-RUN mkdir /bin
-WORKDIR /bin
+RUN mkdir /app
+COPY --from=build /tmp/st-booker /app/st-booker
+COPY ./internal/config/config.yml /app/config.yml
+COPY ./migrations/01_bookings.up.sql /app/migrations/01_bookings.up.sql
 
-COPY --from=build /tmp/* /app
-
-CMD pm-context
+ENTRYPOINT ["/app/st-booker"]

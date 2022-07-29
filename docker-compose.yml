@@ -1,12 +1,20 @@
 version: "3"
 services:
-  host:
-    image: $PROJECT_NAME
-    build: $PROJECT_ROOT
-    restart: always
-    ports:
-      - "80"
+  postgres:
+    container_name: st_booker_postgres
+    image: postgres
     environment:
-      - SERVICE_80_NAME=$PROJECT_NAME
-      - SERVICE_80_CHECK_HTTP=/status
-      - SERVICE_TAGS=$SERVICE_TAGS
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bookings
+    ports:
+      - "5432:5432"
+  server:
+    container_name: st_booker
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
