@@ -15,7 +15,7 @@ const (
 func (c *Client) CreateBooking(ctx context.Context, booking model.Booking) (string, error) {
 	var id string
 
-	row := c.conn.QueryRow(InsertBookingQuery, booking)
+	row := c.conn.QueryRowContext(ctx, InsertBookingQuery, booking)
 	if err := row.Scan(&id); err != nil {
 		return "", err
 	}
@@ -23,10 +23,10 @@ func (c *Client) CreateBooking(ctx context.Context, booking model.Booking) (stri
 	return id, nil
 }
 
-func (c *Client) GetBookings(ctx context.Context, limit, offset int) ([]model.Booking, error) {
+func (c *Client) GetBookings(ctx context.Context, _, _ int) ([]model.Booking, error) { //TODO: add pagination
 	var booking []model.Booking
 
-	err := c.conn.Get(&booking, SelectBookingQuery, booking)
+	err := c.conn.GetContext(ctx, &booking, SelectBookingQuery, booking)
 
 	return booking, err
 }
