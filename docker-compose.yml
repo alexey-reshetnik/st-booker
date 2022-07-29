@@ -1,0 +1,12 @@
+version: "3"
+services:
+  host:
+    image: $PROJECT_NAME
+    build: $PROJECT_ROOT
+    restart: always
+    ports:
+      - "80"
+    environment:
+      - SERVICE_80_NAME=$PROJECT_NAME
+      - SERVICE_80_CHECK_HTTP=/status
+      - SERVICE_TAGS=$SERVICE_TAGS
